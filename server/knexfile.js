@@ -4,67 +4,68 @@
   Knex also allows for easy switching between databases. 
   But the .returning() method will only work for PostgreSQL, MSSQL, and Oracle databases.
 */
-require('dotenv').config();
+require("dotenv").config();
 module.exports = {
-
   test: {
-    client: 'postgresql',
+    client: "pg",
     connection: {
       database: process.env.PGDATABASE,
-      user:     process.env.PGUSER,
-      password: process.env.PGPASSWORD
+      user: process.env.PGUSER,
+      password: process.env.PGPASSWORD,
     },
     pool: {
-      min: 2,
-      max: 10
+      min: 4,
+      max: 10,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
+      tableName: "knex_migrations",
+    },
   },
 
   development: {
-    client: 'postgresql',
+    client: "pg",
     connection: {
+      connectionString: process.env.DATABASE_URL,
+      host: process.env.PGHOST,
+      port: process.env.PGPORT,
+      user: process.env.PGUSER,
+      password: process.env.PGPASSWORD,
       database: process.env.PGDATABASE,
-      user:     process.env.PGUSER,
-      password: process.env.PGPASSWORD
     },
     pool: {
-      min: 2,
-      max: 10
+      min: 4,
+      max: 10,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
+      tableName: "knex_migrations",
+    },
   },
 
   staging: {
-    client: 'postgresql',
+    client: "pg",
     connection: {
-      database: 'my_db',
-      user:     'username',
-      password: 'password'
+      database: "my_db",
+      user: "username",
+      password: "password",
     },
     pool: {
-      min: 2,
-      max: 10
+      min: 4,
+      max: 10,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
+      tableName: "knex_migrations",
+    },
   },
 
   production: {
-    client: 'postgresql',
+    client: "pg",
     connection: process.env.DATABASE_URL,
     pool: {
-      min: 2,
-      max: 10
+      min: 4,
+      max: 10,
     },
     migrations: {
-      tableName: 'knex_migrations'
-    }
-  }
-
+      tableName: "knex_migrations",
+    },
+  },
 };
