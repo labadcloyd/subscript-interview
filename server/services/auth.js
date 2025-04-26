@@ -1,34 +1,44 @@
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 const _ = require("lodash");
 const users = require("../database/users.js");
 const org = require("../database/organization.js");
 const utils = require("../common/utils.js");
+const knex = require("../database/connection.js");
 
-function signup(req, data) {
-  const protocol = req.protocol,
-    host = req.get("host"),
-    username = data.username,
-    password = data.password;
+async function signup(req, res) {
+  let org_name = req.body.org_name,
+    username = req.body.username,
+    password = req.body.password;
 
-  return {
-    title: data.title,
-    order: data.order,
-    completed: data.completed || false,
-    url: `${protocol}://${host}/${id}`,
-  };
+  // todo CHECK PASSWORD SECURITY
+
+  // Start transaction
+  knex
+    .transaction(async function (trx) {
+      const newOrg = await org.create_org({ trx, org_name: org_name });
+      // todo Check if newOrg was created
+
+      // todo Check if username or org name already exists
+
+      // Hashing password
+      const hash = await bcrypt.hash(password, saltRounds);
+      const newUser = await users.create_user({
+        trx,
+        org_id: newOrg[0].id,
+        username: username,
+        password: hash,
+      });
+      return res.json({ newUser });
+    })
+    .then(function (resp) {
+      console.log("Successfully signed up user.");
+    })
+    .catch(function (err) {
+      console.error(err);
+    });
 }
 
-function addErrorReporting(func, message) {
-  return async function (req, res) {
-    try {
-      return await func(req, res);
-    } catch (err) {
-      console.log(`${message} caused by: ${err}`);
-
-      // Not always 500, but for simplicity's sake.
-      res.status(500).send(`Opps! ${message}.`);
-    }
-  };
-}
 const toExport = {
   signup: {
     method: signup,
