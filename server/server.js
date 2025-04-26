@@ -1,18 +1,15 @@
-const app = require('./server-config.js');
-const routes = require('./server-routes.js');
+const app = require("./server-config.js");
+const todoRoutes = require("./routes/todos.js");
+const authRoutes = require("./routes/auth.js");
+const db = require("./database/todo-queries.js");
+const express = require("express");
 
 const port = process.env.PORT || 5000;
 
-app.get('/', routes.getAllTodos);
-app.get('/:id', routes.getTodo);
-
-app.post('/', routes.postTodo);
-app.patch('/:id', routes.patchTodo);
-
-app.delete('/', routes.deleteAllTodos);
-app.delete('/:id', routes.deleteTodo);
-
-if (process.env.NODE_ENV !== 'test') {
+todoRoutes.todosRoute(app);
+authRoutes.authRoutes(app);
+app.use(express.json());
+if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => console.log(`Listening on port ${port}`));
 }
 
