@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const todos = require("../database/todo-queries.js");
+const utils = require("../common/utils.js");
 
 function createToDo(req, data) {
   const protocol = req.protocol,
@@ -44,19 +45,6 @@ async function deleteTodo(req, res) {
   return res.send(createToDo(req, deleted));
 }
 
-function addErrorReporting(func, message) {
-  return async function (req, res) {
-    try {
-      return await func(req, res);
-    } catch (err) {
-      console.log(`${message} caused by: ${err}`);
-
-      // Not always 500, but for simplicity's sake.
-      res.status(500).send(`Opps! ${message}.`);
-    }
-  };
-}
-
 const toExport = {
   getAllTodos: {
     method: getAllTodos,
@@ -73,7 +61,7 @@ const toExport = {
 };
 
 for (let route in toExport) {
-  toExport[route] = addErrorReporting(
+  toExport[route] = utils.addErrorReporting(
     toExport[route].method,
     toExport[route].errorMessage
   );
